@@ -394,6 +394,30 @@ jobs:
     steps:
       *test_steps
 
+  ruby27rails60:
+    docker:
+    - image: rubylang/ruby:trunk-nightly-bionic
+      user: root
+
+    environment:
+      BUNDLE_GEMFILE: Gemfile
+
+    steps:
+      - checkout
+      - *install_bundler
+      - *install_build_deps
+      - *copy_current_gemfile
+      - *restore_cache
+      - *install_dependencies
+      - *save_cache
+      - *restore_test_app_from_workspace
+      - *restore_test_times
+      - *restore_test_reporter
+      - *run_tests
+      - *format_coverage
+      - *save_coverage
+      - *save_test_times
+
   jruby92rails50:
     docker:
       - image: circleci/jruby:9.2.8.0-node-browsers
@@ -530,6 +554,10 @@ workflows:
           requires:
             - testapp60turbolinks
 
+      - ruby27rails60:
+          requires:
+            - testapp60
+
       - jruby92rails50:
           requires:
             - testapp50
@@ -570,6 +598,8 @@ workflows:
             - ruby26rails52
             - ruby26rails60
             - ruby26rails60turbolinks
+
+            - ruby27rails60
 
             - jruby92rails50
             - jruby92rails51
